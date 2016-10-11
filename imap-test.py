@@ -2,10 +2,11 @@ import sys
 import imaplib
 from timeit import default_timer as timer
 import time
+import datetime
 import click
 
 
-def process_mailbox(M):
+def process_mailbox(M, login_time):
     rv, data = M.search(None, "ALL")
     if rv != 'OK':
         print "No messages found!"
@@ -19,7 +20,9 @@ def process_mailbox(M):
                 return
     fetch_loop_end = timer()
     fetch_loop_time = fetch_loop_end - fetch_loop_start
-    print "Loop Time: " + "%.9f" % fetch_loop_time
+    now = datetime.datetime.now()
+    total_time = login_time + fetch_loop_time
+    print str(now) + "," + "%.3f" % login_time + "," + "%.3f" % fetch_loop_time + "," + "%.3f" % total_time
 
 def print_usage_and_die():
     print "Usage: imap-test.py --help"
@@ -47,13 +50,13 @@ def main(host, username, password, folder):
         time.sleep(5)
         login_end = timer()
         login_time = login_end - login_start
-        print "Login Time: " + "%.9f" % login_time
+        #print "Login Time: " + "%.9f" % login_time
     except imaplib.IMAP4.error:
         print "LOGIN FAILED!!! "
         sys.exit(1)
     rv, data = M.select(folder)
     if rv == 'OK':
-        process_mailbox(M)
+        process_mailbox(M, login_time)
         M.close()
     else:
         print "ERROR: Unable to open mailbox ", rv
