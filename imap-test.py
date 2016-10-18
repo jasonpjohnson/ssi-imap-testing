@@ -47,7 +47,6 @@ def main(host, username, password, folder):
     try:
         login_start = timer()
         rv, data = M.login(username, password)
-        time.sleep(5)
         login_end = timer()
         login_time = login_end - login_start
         #print "Login Time: " + "%.9f" % login_time
